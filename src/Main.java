@@ -1,6 +1,7 @@
-import tasks.Epic;
-import tasks.Status;
-import tasks.Task;
+import model.Epic;
+import model.Status;
+import model.Task;
+import manager.TaskManager;
 
 public class Main {
 
@@ -17,8 +18,7 @@ public class Main {
 
         Epic epic = new Epic("Nazvanie zadachi", "opisanie zadachi");
 
-        taskManager.getEpic(id);
-        System.out.println();
+
     }
 }
 
