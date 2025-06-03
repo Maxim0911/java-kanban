@@ -14,6 +14,9 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public Task(String тестЗадача) {
+    }
+
     public long getId() {
         return id;
     }
@@ -48,10 +51,10 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Task task = (Task) o;
-        return id == task.id && name.equals(task.name) && description.equals(task.description) && taskStatus == task.taskStatus;
+        return id == task.id;
     }
 
     @Override
