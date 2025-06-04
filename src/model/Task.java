@@ -14,9 +14,6 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
-    public Task(String тестЗадача) {
-    }
-
     public long getId() {
         return id;
     }
