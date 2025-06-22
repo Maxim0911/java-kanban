@@ -52,8 +52,11 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public Task deleteTask(long id) {
+        Task task = tasks.remove(id);
 
-        return tasks.remove(id);
+        historyManager.remove(task);
+
+        return task;
     }
 
     //this methods for epicov
