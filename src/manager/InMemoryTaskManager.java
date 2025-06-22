@@ -63,7 +63,7 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
     @Override
     public Epic getEpic(long id) {
         Epic epic = epics.get(id);
-        if(epic != null) {
+        if (epic != null) {
             historyManager.add(epic);
         }
         return epic;
