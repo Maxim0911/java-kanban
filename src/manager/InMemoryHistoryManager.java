@@ -61,14 +61,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
 
-            private void linkLast(Task task) {
+    private void linkLast(Task task) {
         Node node = new Node(task, last, null);
         if (first == null) {
             first = node;
         } else {
             last.next = node;
         }
-            }
+    }
 
 
         private static class Node {
