@@ -39,7 +39,7 @@ class EpicTest {
     }
 
     @Test
-    void GetSubtaskIdsTest() {
+    void getSubtaskIdsTest() {
         ArrayList<Long> expectedList = new ArrayList<>();
         expectedList.add(1L);
         expectedList.add(2L);
