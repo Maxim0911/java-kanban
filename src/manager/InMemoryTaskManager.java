@@ -23,7 +23,7 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
     public Task getTask(long id) {
         Task task = tasks.get(id);
         if (task == null) {
-            return task ;
+            return task;
         }
         historyManager.add(task);
         addHistory(task);
