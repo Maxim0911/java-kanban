@@ -23,23 +23,22 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Task task) {
         removeNode(task.getId());
-
+        historyList.remove(task); // Явное удаление задачи из historyList
     }
 
     @Override
     public void add(Task task) {
-        removeNode(task.getId());
-        linkLast(task);
-        nodes.put(task.getId(), last);
-
-        if (task == null) {
-            return;   //добавить таск в список историй
+        if (!contains(task)) {
+            linkLast(task);
+            nodes.put(task.getId(), last);
+            historyList.add(task);
         }
-        historyList.remove(task);
-
-        historyList.add(task);
-
     }
+
+    private boolean contains(Task task) {
+        return nodes.containsKey(task.getId());
+    }
+
 
     private void removeNode(Long taskId) {
         Node node = nodes.get(taskId);
@@ -68,6 +67,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             last.next = node;
         }
+        last = node;
     }
 
 

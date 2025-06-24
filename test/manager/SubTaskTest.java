@@ -1,4 +1,4 @@
-package test.manager;
+package manager;
 
 import model.Status;
 import model.SubTask;

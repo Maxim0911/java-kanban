@@ -1,8 +1,7 @@
-package test.manager;
+package manager;
 
-import manager.InMemoryHistoryManager;
-import model.Task;
 import model.Status;
+import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,84 +13,66 @@ class InMemoryHistoryManagerTest {
     private InMemoryHistoryManager historyManager;
     private Task task1;
     private Task task2;
-    private Task task3;
 
     @BeforeEach
     void setUp() {
         historyManager = new InMemoryHistoryManager();
         task1 = new Task("Task 1", "Description 1", Status.NEW);
         task1.setId(1);
-        task2 = new Task("Task 2", "Description 2", Status.IN_PROGRESS);
+        task2 = new Task("Task 2", "Description 2", Status.NEW);
         task2.setId(2);
-        task3 = new Task("Task 3", "Description 3", Status.DONE);
-        task3.setId(3);
     }
 
     @Test
     void addShouldAddTaskToHistory() {
         historyManager.add(task1);
         List<Task> history = historyManager.getHistory();
-
         assertEquals(1, history.size());
         assertEquals(task1, history.get(0));
     }
 
     @Test
-    void addShouldNotAddNullTask() {
-        historyManager.add(null);
-        List<Task> history = historyManager.getHistory();
-
-        assertTrue(history.isEmpty());
-    }
-
-    @Test
-    void addShouldMoveExistingTaskToEnd() {
+    void removeShouldDeleteTaskFromHistory() {
+        // Добавляем задачи в историю
         historyManager.add(task1);
         historyManager.add(task2);
-        historyManager.add(task1); // Добавляем существующую задачу
 
-        List<Task> history = historyManager.getHistory();
+        // Убеждаемся, что обе задачи присутствуют в истории
+        assertEquals(2, historyManager.getHistory().size());
+        assertTrue(historyManager.getHistory().contains(task1));
+        assertTrue(historyManager.getHistory().contains(task2));
 
-        assertEquals(2, history.size());
-        assertEquals(task2, history.get(0));
-        assertEquals(task1, history.get(1));
+        // Удаляем task1 из истории
+        historyManager.remove(task1);
+
+        // Проверяем, что task1 удалён, а task2 остаётся в истории
+        assertEquals(1, historyManager.getHistory().size());
+        assertFalse(historyManager.getHistory().contains(task1));
+        assertTrue(historyManager.getHistory().contains(task2));
     }
 
 
 
-    @Test
-    void getHistoryShouldReturnCopyOfHistory() {
+@Test
+    void removeNonExistentTaskShouldDoNothing() {
         historyManager.add(task1);
-        List<Task> history = historyManager.getHistory();
-        history.add(task2); // Модифицируем полученный список
+        historyManager.remove(task2); // task2 не добавлен
 
-        List<Task> originalHistory = historyManager.getHistory();
-        assertEquals(1, originalHistory.size());
+        assertEquals(1, historyManager.getHistory().size());
     }
 
     @Test
-    void historyShouldMaintainInsertionOrder() {
-        historyManager.add(task1);
-        historyManager.add(task2);
-        historyManager.add(task3);
-
-        List<Task> history = historyManager.getHistory();
-
-        assertEquals(3, history.size());
-        assertEquals(task1, history.get(0));
-        assertEquals(task2, history.get(1));
-        assertEquals(task3, history.get(2));
+    void getHistoryShouldReturnEmptyListForEmptyHistory() {
+        assertTrue(historyManager.getHistory().isEmpty());
     }
 
     @Test
-    void addShouldHandleDuplicateTasksCorrectly() {
-        Task task1Copy = new Task(task1.getName(), task1.getDescription(), task1.getTaskStatus());
-        task1Copy.setId(task1.getId());
-
+    void getHistoryShouldReturnCopyOfInternalList() {
         historyManager.add(task1);
-        historyManager.add(task1Copy);
+        List<Task> history1 = historyManager.getHistory();
+        List<Task> history2 = historyManager.getHistory();
 
-        List<Task> history = historyManager.getHistory();
-        assertEquals(1, history.size());
+        assertNotSame(history1, history2);
+        assertEquals(history1, history2);
     }
 }

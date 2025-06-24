@@ -22,6 +22,9 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
     @Override
     public Task getTask(long id) {
         Task task = tasks.get(id);
+        if (task == null) {
+            return task ;
+        }
         historyManager.add(task);
         addHistory(task);
         return task;
@@ -187,7 +190,7 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
     }
 
     public void addHistory(Task task) {
-       historyManager.add(task); //добавить таск в список с историе
+       historyManager.add(task);
     }
 
 }
