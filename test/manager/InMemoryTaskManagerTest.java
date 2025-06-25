@@ -1,7 +1,6 @@
-package test.manager;
+package manager;
 
 import manager.InMemoryTaskManager;
-import manager.Managers;
 import model.Epic;
 import model.SubTask;
 import model.Task;

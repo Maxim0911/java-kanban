@@ -7,12 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class inMemoryHistoryManager implements HistoryManager {
-    Node first;
-    Node last;
-    private Map<Long, Node> nodes = new HashMap<>();
+public class InMemoryHistoryManager implements HistoryManager {
 
-
+    private final Map<Long, Node> nodes = new HashMap<>();
+    private Node first;
+    private Node last;
     private final List<Task> historyList = new ArrayList<>();
 
     @Override
@@ -21,25 +20,24 @@ public class inMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void remove (Task task) {
+    public void remove(Task task) {
         removeNode(task.getId());
-
+        historyList.remove(task); // Явное удаление задачи из historyList
     }
 
     @Override
     public void add(Task task) {
-        removeNode(task.getId());
-        linkLast(task);
-        nodes.put(task.getId(), last);
-
-        if (task == null) {
-            return;   //добавить таск в список историй
+        if (!contains(task)) {
+            linkLast(task);
+            nodes.put(task.getId(), last);
+            historyList.add(task);
         }
-        historyList.remove(task);
-
-        historyList.add(task);
-
     }
+
+    private boolean contains(Task task) {
+        return nodes.containsKey(task.getId());
+    }
+
 
     private void removeNode(Long taskId) {
         Node node = nodes.get(taskId);
@@ -61,14 +59,15 @@ public class inMemoryHistoryManager implements HistoryManager {
     }
 
 
-            private void linkLast(Task task) {
+    private void linkLast(Task task) {
         Node node = new Node(task, last, null);
-        if(first == null) {
+        if (first == null) {
             first = node;
         } else {
             last.next = node;
         }
-            }
+        last = node;
+    }
 
 
         private static class Node {
@@ -108,4 +107,4 @@ public class inMemoryHistoryManager implements HistoryManager {
             }
         }
     }
-
+//dlya pusha
