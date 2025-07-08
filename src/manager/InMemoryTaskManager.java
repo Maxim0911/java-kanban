@@ -10,12 +10,12 @@ import model.SubTask;
 import model.Task;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Long, Task> tasks = new HashMap<>();
-    private final HashMap<Long, Epic> epics = new HashMap<>();
-    private final HashMap<Long, SubTask> subtasks = new HashMap<>();
+    protected final HashMap<Long, Task> tasks = new HashMap<>();
+    protected final HashMap<Long, Epic> epics = new HashMap<>();
+    protected final HashMap<Long, SubTask> subtasks = new HashMap<>();
 
-    private long generatorId = 1;
-private HistoryManager historyManager = Managers.getDefaultHistory();
+    protected long generatorId = 1;
+protected HistoryManager historyManager = Managers.getDefaultHistory();
 
 
     //this all methods for Task
@@ -187,6 +187,9 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
        historyManager.add(task); //добавить таск в список с историе
     }
 
+    public HashMap<Long, Task> getTasks() {
+        return tasks;
+    }
 }
 
 

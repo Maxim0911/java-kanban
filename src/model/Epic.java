@@ -5,8 +5,8 @@ import java.util.ArrayList;
 public class Epic extends Task {
     public ArrayList<Long> subtaskIds;  // Храним только ID подзадач
 
-    public Epic(String name, String description) {
-        super(name, description, Status.NEW);
+    public Epic(String name, String description, Status taskStatus) {
+        super(name, description, taskStatus);
         this.subtaskIds = new ArrayList<>();
     }
 

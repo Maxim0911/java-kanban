@@ -12,7 +12,7 @@ public class Main {
         //тесты:
         //1. Создание задачи ТАСК i epic
         System.out.println("создаем таск");
-        Task taskForCreate = new Task("Name", "Description", Status.NEW);
+        Task taskForCreate = new Task("Name", "Description",Status.NEW);
         long taskId = taskManager.createTask(taskForCreate).getId();
         taskManager.createTask(taskForCreate);
         System.out.println("Получаем задачу по ID: " + taskId);

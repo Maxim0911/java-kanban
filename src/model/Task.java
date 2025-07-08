@@ -9,6 +9,7 @@ public class Task {
     protected Status taskStatus;
 
     public Task(String name, String description, Status taskStatus) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.taskStatus = taskStatus;
@@ -40,6 +41,10 @@ public class Task {
 
     public Status getTaskStatus() {
         return taskStatus;
+    }
+
+    public void setStatus(Status taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     public void setTaskStatus(Status taskStatus) {

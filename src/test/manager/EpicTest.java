@@ -1,6 +1,8 @@
 package test.manager;
 
 import java.util.ArrayList;
+
+import model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.Epic;
@@ -13,7 +15,7 @@ class EpicTest {
 
     @BeforeEach
     void startEpic() {
-        epic = new Epic("Epic", "Description");
+        epic = new Epic("Epic", "Description", Status.NEW);
         epic.subtaskIds = new ArrayList<>();
         epic.subtaskIds.add(1L);
         epic.subtaskIds.add(2L);

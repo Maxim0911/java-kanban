@@ -48,7 +48,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createEpic() {
-        Epic epic = new Epic("Epic", "Description");
+        Epic epic = new Epic("Epic", "Description", Status.NEW);
         Epic createdEpic = taskManager.createEpic(epic);
 
         assertNotNull(createdEpic.getId());
@@ -58,7 +58,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getEpic() {
-        Epic epic = taskManager.createEpic(new Epic("Test", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Test", "Description", Status.NEW));
         Epic foundEpic = taskManager.getEpic(epic.getId());
 
         assertEquals(epic, foundEpic);
@@ -67,8 +67,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateEppic() {
-        Epic epic = taskManager.createEpic(new Epic("Original", "Description"));
-        Epic updated = new Epic("Updated", "New Description");
+        Epic epic = taskManager.createEpic(new Epic("Original", "Description",Status.NEW));
+        Epic updated = new Epic("Updated", "New Description",Status.IN_PROGRESS);
         updated.setId(epic.getId());
 
         taskManager.updateEppic(updated);
@@ -79,8 +79,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteAllEpics() {
-        taskManager.createEpic(new Epic("Epic 1", "Description"));
-        taskManager.createEpic(new Epic("Epic 2", "Description"));
+        taskManager.createEpic(new Epic("Epic 1", "Description", Status.NEW));
+        taskManager.createEpic(new Epic("Epic 2", "Description", Status.DONE));
 
         taskManager.deleteAllEpics();
 
@@ -89,7 +89,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createSubtask() {
-        Epic epic = taskManager.createEpic(new Epic("Parent", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Parent", "Description", Status.NEW));
         SubTask subTask = new SubTask("Sub", "Description", Status.NEW, epic.getId());
 
         SubTask created = taskManager.createSubtask(subTask);
@@ -101,7 +101,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getSubTask() {
-        Epic epic = taskManager.createEpic(new Epic("Parent", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Parent", "Description", Status.NEW));
         SubTask subTask = taskManager.createSubtask(new SubTask("Sub", "Description", Status.NEW, epic.getId()));
 
         SubTask found = taskManager.getSubTask(subTask.getId());
@@ -112,8 +112,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateSubtask() {
-        Epic epic = taskManager.createEpic(new Epic("Parent", "Description"));
-        SubTask subTask = taskManager.createSubtask(new SubTask("Original", "Description", Status.NEW, epic.getId()));
+        Epic epic = taskManager.createEpic(new Epic("Parent", "Description", Status.NEW));
+        SubTask subTask = taskManager.createSubtask(new SubTask("Original", "Description", Status.IN_PROGRESS, epic.getId()));
 
         SubTask updated = new SubTask("Updated", "New Description", Status.DONE, epic.getId());
         updated.setId(subTask.getId());
@@ -126,7 +126,7 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteById() {
-        Epic epic = taskManager.createEpic(new Epic("Parent", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Parent", "Description",Status.NEW));
         SubTask subTask = taskManager.createSubtask(new SubTask("To delete", "Description", Status.NEW, epic.getId()));
 
         taskManager.deleteById(subTask.getId());
@@ -138,7 +138,7 @@ class InMemoryTaskManagerTest {
     @Test
     void getHistory() {
         Task task = taskManager.createTask(new Task("Task", "Description", Status.NEW));
-        Epic epic = taskManager.createEpic(new Epic("Epic", "Description"));
+        Epic epic = taskManager.createEpic(new Epic("Epic", "Description", Status.NEW));
 
         taskManager.getTask(task.getId());
         taskManager.getEpic(epic.getId());
