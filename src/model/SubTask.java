@@ -3,6 +3,8 @@ package model;
 public class SubTask extends Task {
     protected long epicId;
 
+
+
     public SubTask(String name, String description, Status taskStatus, long epicId) {
         super(name, description, taskStatus);
         this.epicId = epicId;
@@ -31,5 +33,12 @@ public class SubTask extends Task {
         int result = super.hashCode();
         result = 31 * result + Long.hashCode(epicId);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SubTask{" +
+                "epicId=" + epicId +
+                '}';
     }
 }
