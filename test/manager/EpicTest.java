@@ -1,8 +1,7 @@
-package test.manager;
+package manager;
 
 import java.util.ArrayList;
 
-import model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.Epic;
@@ -15,10 +14,9 @@ class EpicTest {
 
     @BeforeEach
     void startEpic() {
-        epic = new Epic("Epic", "Description", Status.NEW);
-        epic.subtaskIds = new ArrayList<>();
-        epic.subtaskIds.add(1L);
-        epic.subtaskIds.add(2L);
+        epic = new Epic("Epic", "Description");
+        epic.addSubtaskId(1L);
+        epic.addSubtaskId(2L);
     }
 
     @Test
@@ -27,9 +25,7 @@ class EpicTest {
 
         assertEquals(3, epic.getSubtaskIds().size());
         assertEquals(testSubtaskId, epic.getSubtaskIds().get(2));
-
     }
-
 
     @Test
     void removeSubtaskId_shouldRemoveIdTest() {
@@ -37,7 +33,6 @@ class EpicTest {
         epic.removeSubtaskId(testSubtaskId);
 
         assertFalse(epic.getSubtaskIds().contains(testSubtaskId));
-
     }
 
     @Test
@@ -50,5 +45,4 @@ class EpicTest {
 
         assertEquals(expectedList, actualList);
     }
-
 }

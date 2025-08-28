@@ -31,4 +31,8 @@ public class SubTask extends Task {
         result = 31 * result + Long.hashCode(epicId);
         return result;
     }
+    @Override
+    public String getType() {
+        return "SUBTASK";
+    }
 }

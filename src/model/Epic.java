@@ -3,19 +3,19 @@ package model;
 import java.util.ArrayList;
 
 public class Epic extends Task {
-    public ArrayList<Long> subtaskIds;  // Храним только ID подзадач
+    private ArrayList<Long> subtaskIds;
 
     public Epic(String name, String description) {
         super(name, description, Status.NEW);
         this.subtaskIds = new ArrayList<>();
     }
 
-    public ArrayList<Long> getSubtaskIds() {
-        return subtaskIds;
-    }
-
     public void addSubtaskId(Long subtaskId) {
         subtaskIds.add(subtaskId);
+    }
+
+    public ArrayList<Long> getSubtaskIds() {
+        return subtaskIds;
     }
 
     public void removeSubtaskId(long subtaskId) {
@@ -35,5 +35,9 @@ public class Epic extends Task {
         int result = super.hashCode();
         result = 31 * result + subtaskIds.hashCode();
         return result;
+    }
+    @Override
+    public String getType() {
+        return "EPIC";
     }
 }

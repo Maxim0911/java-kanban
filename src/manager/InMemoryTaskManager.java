@@ -15,7 +15,20 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Long, SubTask> subtasks = new HashMap<>();
 
     protected long generatorId = 1;
-protected HistoryManager historyManager = Managers.getDefaultHistory();
+protected InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+
+    public HashMap<Long, Task> getTasks() {
+        return tasks;
+    }
+
+    public HashMap<Long, Epic> getEpics() {
+        return epics;
+    }
+
+    public HashMap<Long, SubTask> getSubTasks() {
+        return subtasks;
+    }
+
 
 
     //this all methods for Task
@@ -23,7 +36,6 @@ protected HistoryManager historyManager = Managers.getDefaultHistory();
     public Task getTask(long id) {
         Task task = tasks.get(id);
         historyManager.add(task);
-        addHistory(task);
         return task;
     }
 
@@ -141,10 +153,6 @@ protected HistoryManager historyManager = Managers.getDefaultHistory();
         subtasks.clear();
     }
 
-    @Override
-    public SubTask deleteById(Long id) {
-        return subtasks.remove(id);
-    }
 
     @Override
     public void updateEpicStatus(long id) {
@@ -187,9 +195,6 @@ protected HistoryManager historyManager = Managers.getDefaultHistory();
        historyManager.add(task); //добавить таск в список с историе
     }
 
-    public HashMap<Long, Task> getTasks() {
-        return tasks;
-    }
 }
 
 
