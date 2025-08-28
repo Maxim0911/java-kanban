@@ -36,6 +36,7 @@ public class Epic extends Task {
         result = 31 * result + subtaskIds.hashCode();
         return result;
     }
+
     @Override
     public String getType() {
         return "EPIC";
