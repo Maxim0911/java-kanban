@@ -75,6 +75,7 @@ public class Task {
 
     public void setStatus(Status status) {
     }
+
     public String getType() {
         return "TASK";
     }
