@@ -47,6 +47,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             epic.addSubtaskId(subTask.getId()); // Исправлено на addSubtaskId
                         }
                         break;
+                    default:
+                        throw new IllegalStateException("Неизвестный тип задачи: " + type);
                 }
             }
 
