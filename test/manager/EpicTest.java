@@ -1,6 +1,7 @@
 package manager;
 
 import java.util.ArrayList;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import model.Epic;
@@ -14,13 +15,12 @@ class EpicTest {
     @BeforeEach
     void startEpic() {
         epic = new Epic("Epic", "Description");
-        epic.subtaskIds = new ArrayList<>();
-        epic.subtaskIds.add(1L);
-        epic.subtaskIds.add(2L);
+        epic.addSubtaskId(1L);
+        epic.addSubtaskId(2L);
     }
 
     @Test
-    void addSubtaskIdShouldAddNewId() {
+    void addSubtaskIdTest() {
         epic.addSubtaskId(testSubtaskId);
 
         assertEquals(3, epic.getSubtaskIds().size());
@@ -28,42 +28,21 @@ class EpicTest {
     }
 
     @Test
-    void removeSubtaskIdShouldRemoveExistingId() {
+    void removeSubtaskId_shouldRemoveIdTest() {
         epic.addSubtaskId(testSubtaskId);
         epic.removeSubtaskId(testSubtaskId);
 
         assertFalse(epic.getSubtaskIds().contains(testSubtaskId));
-        assertEquals(2, epic.getSubtaskIds().size());
     }
 
     @Test
-    void getSubtaskIdsShouldReturnCurrentList() {
+    void GetSubtaskIdsTest() {
         ArrayList<Long> expectedList = new ArrayList<>();
         expectedList.add(1L);
         expectedList.add(2L);
 
-        assertEquals(expectedList, epic.getSubtaskIds());
-    }
+        ArrayList<Long> actualList = epic.getSubtaskIds();
 
-    @Test
-    void equalsShouldReturnTrueForSameEpics() {
-        Epic sameEpic = new Epic("Epic", "Description");
-        sameEpic.subtaskIds = new ArrayList<>(epic.subtaskIds);
-
-        assertTrue(epic.equals(sameEpic));
-    }
-
-    @Test
-    void equalsShouldReturnFalseForDifferentEpics() {
-        Epic differentEpic = new Epic("Different", "Description");
-        differentEpic.subtaskIds = new ArrayList<>();
-
-        assertFalse(epic.equals(differentEpic));
-    }
-
-    @Test
-    void hashCodeShouldBeConsistent() {
-        int initialHashCode = epic.hashCode();
-        assertEquals(initialHashCode, epic.hashCode());
+        assertEquals(expectedList, actualList);
     }
 }

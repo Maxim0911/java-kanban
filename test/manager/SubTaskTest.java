@@ -34,7 +34,7 @@ class SubTaskTest {
     }
 
     @Test
-    void equalsTest() {
+    void EqualsTest() {
         SubTask subTask1 = new SubTask(testName, testDescription, testStatus, testEpicId);
         SubTask subTask2 = new SubTask(testName, testDescription, testStatus, testEpicId);
         SubTask subTask3 = new SubTask(testName, testDescription, testStatus, 2L);
@@ -47,7 +47,7 @@ class SubTaskTest {
     }
 
     @Test
-    void hashCodeTest() {
+    void HashCodeTest() {
         SubTask subTask1 = new SubTask(testName, testDescription, testStatus, testEpicId);
         SubTask subTask2 = new SubTask(testName, testDescription, testStatus, testEpicId);
         assertEquals(subTask1.hashCode(), subTask2.hashCode());

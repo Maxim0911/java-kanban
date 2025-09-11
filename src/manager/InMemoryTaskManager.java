@@ -10,23 +10,32 @@ import model.SubTask;
 import model.Task;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Long, Task> tasks = new HashMap<>();
-    private final HashMap<Long, Epic> epics = new HashMap<>();
-    private final HashMap<Long, SubTask> subtasks = new HashMap<>();
+    protected final HashMap<Long, Task> tasks = new HashMap<>();
+    protected final HashMap<Long, Epic> epics = new HashMap<>();
+    protected final HashMap<Long, SubTask> subtasks = new HashMap<>();
 
-    private long generatorId = 1;
-private HistoryManager historyManager = Managers.getDefaultHistory();
+    protected long generatorId = 1;
+protected InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+
+    public HashMap<Long, Task> getTasks() {
+        return tasks;
+    }
+
+    public HashMap<Long, Epic> getEpics() {
+        return epics;
+    }
+
+    public HashMap<Long, SubTask> getSubTasks() {
+        return subtasks;
+    }
+
 
 
     //this all methods for Task
     @Override
     public Task getTask(long id) {
         Task task = tasks.get(id);
-        if (task == null) {
-            return task;
-        }
         historyManager.add(task);
-        addHistory(task);
         return task;
     }
 
@@ -55,11 +64,8 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public Task deleteTask(long id) {
-        Task task = tasks.remove(id);
 
-        historyManager.remove(task);
-
-        return task;
+        return tasks.remove(id);
     }
 
     //this methods for epicov
@@ -147,10 +153,6 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
         subtasks.clear();
     }
 
-    @Override
-    public SubTask deleteById(Long id) {
-        return subtasks.remove(id);
-    }
 
     @Override
     public void updateEpicStatus(long id) {
@@ -190,9 +192,9 @@ private HistoryManager historyManager = Managers.getDefaultHistory();
     }
 
     public void addHistory(Task task) {
-       historyManager.add(task);
+       historyManager.add(task); //добавить таск в список с историе
     }
 
 }
-
+//поиск ошибок 3
 

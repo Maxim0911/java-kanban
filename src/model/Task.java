@@ -72,5 +72,12 @@ public class Task {
                 ", taskStatus=" + taskStatus +
                 '}';
     }
+
+    public void setStatus(Status status) {
+    }
+
+    public String getType() {
+        return "TASK";
+    }
 }
 //12345
