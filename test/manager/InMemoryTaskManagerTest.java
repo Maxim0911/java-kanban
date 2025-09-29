@@ -90,6 +90,24 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
     }
 
     @Test
+    void testTimeOverlapException() {
+        // Создаем первую задачу
+        Task task1 = new Task("Task1", "Description", Status.NEW,
+                Duration.ofHours(2), LocalDateTime.of(2024, 1, 15, 10, 0));
+
+        taskManager.createTask(task1);
+
+        // Пересекающаяся задача (11:00-12:00 пересекается с 10:00-12:00)
+        Task overlappingTask = new Task("Task2", "Description", Status.NEW,
+                Duration.ofHours(1), LocalDateTime.of(2024, 1, 15, 11, 0));
+
+        // Должно выбросить исключение при создании пересекающейся задачи
+        assertThrows(RuntimeException.class, () -> {
+            taskManager.createTask(overlappingTask);
+        }, "Задачи пересекаются по времени - должно быть исключение");
+    }
+
+    @Test
     void testGetPrioritizedTasks() {
         Task task1 = new Task("Task1", "Desc", Status.NEW,
                 Duration.ofHours(1), LocalDateTime.of(2024, 1, 15, 12, 0));

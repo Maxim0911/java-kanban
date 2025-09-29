@@ -24,23 +24,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void setUp() {
         taskManager = createTaskManager();
 
-        // ИСПРАВЛЕНИЕ: Задачи не должны пересекаться по времени
         task = new Task("Test Task", "Test Description", Status.NEW,
                 Duration.ofHours(1), LocalDateTime.of(2024, 1, 15, 10, 0));
 
         epic = new Epic("Test Epic", "Test Epic Description");
 
-        // ИСПРАВЛЕНИЕ: Подзадачи начинаются ПОСЛЕ окончания task
-        // Task: 10:00 - 11:00, SubTask1: 11:30 - 12:00
         subTask1 = new SubTask("SubTask 1", "Description 1", Status.NEW, 0L,
                 Duration.ofMinutes(30), LocalDateTime.of(2024, 1, 15, 11, 30));
 
-        // SubTask2: 12:30 - 13:15
         subTask2 = new SubTask("SubTask 2", "Description 2", Status.NEW, 0L,
                 Duration.ofMinutes(45), LocalDateTime.of(2024, 1, 15, 12, 30));
     }
 
-    // Тесты для Task
     @Test
     void testCreateAndGetTask() {
         Task created = taskManager.createTask(task);
@@ -54,7 +49,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void testUpdateTask() {
         Task created = taskManager.createTask(task);
-        // ИСПРАВЛЕНИЕ: Обновленная задача не должна пересекаться с другими
         Task updated = new Task("Updated", "Updated", Status.IN_PROGRESS,
                 Duration.ofHours(1), LocalDateTime.of(2024, 1, 16, 10, 0)); // Другой день
         updated.setId(created.getId());
@@ -73,7 +67,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertNull(taskManager.getTask(created.getId()));
     }
 
-    // Тесты для Epic
     @Test
     void testCreateAndGetEpic() {
         Epic created = taskManager.createEpic(epic);
@@ -92,7 +85,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals("Updated Epic", retrieved.getName());
     }
 
-    // Тесты для SubTask
     @Test
     void testCreateAndGetSubTask() {
         Epic epicCreated = taskManager.createEpic(epic);
@@ -109,7 +101,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         subTask1.setEpicId(epicCreated.getId());
         SubTask created = taskManager.createSubtask(subTask1);
 
-        // ИСПРАВЛЕНИЕ: Обновленная подзадача не должна пересекаться
         SubTask updated = new SubTask("Updated Sub", "Updated Desc", Status.IN_PROGRESS,
                 epicCreated.getId(), Duration.ofHours(1), LocalDateTime.of(2024, 1, 16, 10, 0)); // Другой день
         updated.setId(created.getId());
@@ -120,7 +111,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(Status.IN_PROGRESS, retrieved.getTaskStatus());
     }
 
-    // Тесты для получения всех задач определенного типа
     @Test
     void testGetAllEpics() {
         taskManager.createEpic(epic);
@@ -177,7 +167,6 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(subTasks.isEmpty());
     }
 
-    // Дополнительный тест для проверки приоритетов
     @Test
     void testGetPrioritizedTasks() {
         Task task1 = taskManager.createTask(task);
@@ -187,17 +176,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         List<Task> prioritized = taskManager.getPrioritizedTasks();
 
-        // Epic может быть в списке если у него есть startTime (рассчитанный из подзадач)
-        // Поэтому проверяем что в списке есть как минимум Task и SubTask
         assertTrue(prioritized.size() >= 2);
         assertTrue(prioritized.contains(task1));
         assertTrue(prioritized.contains(subTaskCreated));
 
-        // Проверяем порядок (по startTime)
         int taskIndex = prioritized.indexOf(task1);
         int subTaskIndex = prioritized.indexOf(subTaskCreated);
 
-        // Task должен быть перед SubTask (10:00 vs 11:30)
         assertTrue(taskIndex < subTaskIndex);
     }
 }

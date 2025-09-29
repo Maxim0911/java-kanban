@@ -53,12 +53,10 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     void testSaveAndLoadWithTasks() {
         FileBackedTaskManager manager1 = createTaskManager();
 
-        // Используем задачи без времени для избежания пересечений
         Task task = manager1.createTask(new Task("Task", "Desc", Status.NEW));
         Epic epic = manager1.createEpic(new Epic("Epic", "Desc"));
         SubTask subTask = manager1.createSubtask(new SubTask("Sub", "Desc", Status.NEW, epic.getId()));
 
-        // Добавляем в историю
         manager1.getTask(task.getId());
         manager1.getEpic(epic.getId());
         manager1.getSubTask(subTask.getId());
@@ -75,13 +73,11 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     void testSaveAndLoadWithTime() {
         FileBackedTaskManager manager1 = createTaskManager();
 
-        // Задачи с временем, но без пересечений
         Task task = manager1.createTask(new Task("Task", "Desc", Status.NEW,
                 Duration.ofHours(1), LocalDateTime.of(2024, 1, 15, 10, 0)));
 
         Epic epic = manager1.createEpic(new Epic("Epic", "Desc"));
 
-        // Подзадача начинается после окончания задачи
         SubTask subTask = manager1.createSubtask(new SubTask("Sub", "Desc", Status.NEW, epic.getId(),
                 Duration.ofMinutes(30), LocalDateTime.of(2024, 1, 15, 11, 30)));
 
@@ -121,8 +117,6 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
 
         Task task1 = manager1.createTask(new Task("Task1", "Desc1", Status.NEW));
         Task task2 = manager1.createTask(new Task("Task2", "Desc2", Status.NEW));
-
-        // Добавляем в историю в определенном порядке
         manager1.getTask(task1.getId());
         manager1.getTask(task2.getId());
 
