@@ -1,4 +1,4 @@
-package manager;
+package managers;
 
 import model.Task;
 
@@ -23,7 +23,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;   //добавить таск в список историй
         }
-            historyList.remove(task);
+        historyList.removeIf(existingTask -> existingTask.getId() == task.getId());
 
             historyList.add(task);
 
@@ -31,5 +31,12 @@ public class InMemoryHistoryManager implements HistoryManager {
                 historyList.remove(0);
             }
         }
+
+    @Override
+    public void remove(long id) {
+        // Удаляем задачу по ID
+        historyList.removeIf(task -> task.getId() == id);
     }
+}
+
 
