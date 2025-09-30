@@ -35,8 +35,8 @@ class EpicStatusTest {
     @Test
     void testEpicStatusAllNew() {
         // a. Все подзадачи со статусом NEW
-        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId());
-        SubTask sub2 = createSubTask("Sub2", Status.NEW, epic.getId());
+        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId(), 0);
+        SubTask sub2 = createSubTask("Sub2", Status.NEW, epic.getId(), 1);
 
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
@@ -47,8 +47,8 @@ class EpicStatusTest {
     @Test
     void testEpicStatusAllDone() {
         // b. Все подзадачи со статусом DONE
-        SubTask sub1 = createSubTask("Sub1", Status.DONE, epic.getId());
-        SubTask sub2 = createSubTask("Sub2", Status.DONE, epic.getId());
+        SubTask sub1 = createSubTask("Sub1", Status.DONE, epic.getId(), 0);
+        SubTask sub2 = createSubTask("Sub2", Status.DONE, epic.getId(), 1);
 
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
@@ -59,8 +59,8 @@ class EpicStatusTest {
     @Test
     void testEpicStatusNewAndDone() {
         // c. Подзадачи со статусами NEW и DONE
-        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId());
-        SubTask sub2 = createSubTask("Sub2", Status.DONE, epic.getId());
+        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId(), 0);
+        SubTask sub2 = createSubTask("Sub2", Status.DONE, epic.getId(), 1);
 
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
@@ -71,8 +71,8 @@ class EpicStatusTest {
     @Test
     void testEpicStatusInProgress() {
         // d. Подзадачи со статусом IN_PROGRESS
-        SubTask sub1 = createSubTask("Sub1", Status.IN_PROGRESS, epic.getId());
-        SubTask sub2 = createSubTask("Sub2", Status.IN_PROGRESS, epic.getId());
+        SubTask sub1 = createSubTask("Sub1", Status.IN_PROGRESS, epic.getId(), 0);
+        SubTask sub2 = createSubTask("Sub2", Status.IN_PROGRESS, epic.getId(), 1);
 
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
@@ -82,9 +82,9 @@ class EpicStatusTest {
 
     @Test
     void testEpicStatusMixed() {
-        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId());
-        SubTask sub2 = createSubTask("Sub2", Status.IN_PROGRESS, epic.getId());
-        SubTask sub3 = createSubTask("Sub3", Status.DONE, epic.getId());
+        SubTask sub1 = createSubTask("Sub1", Status.NEW, epic.getId(), 0);
+        SubTask sub2 = createSubTask("Sub2", Status.IN_PROGRESS, epic.getId(), 1);
+        SubTask sub3 = createSubTask("Sub3", Status.DONE, epic.getId(), 2);
 
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
@@ -99,8 +99,8 @@ class EpicStatusTest {
         assertEquals(Status.NEW, epic.getTaskStatus());
     }
 
-    private SubTask createSubTask(String name, Status status, long epicId) {
+    private SubTask createSubTask(String name, Status status, long epicId, int hourOffset) {
         return new SubTask(name, "Description", status, epicId,
-                Duration.ofMinutes(30), LocalDateTime.now());
+                Duration.ofMinutes(30), LocalDateTime.now().plusHours(hourOffset));
     }
 }
