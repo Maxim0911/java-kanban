@@ -119,7 +119,7 @@ public class CSVFormatter {
             try {
                 historyIds.add(Long.parseLong(id.trim()));
             } catch (NumberFormatException e) {
-
+                System.err.println("Некорректный ID в истории: " + id);
             }
         }
         return historyIds;
