@@ -1,9 +1,7 @@
 package model;
 
-import model.Status;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Task {
