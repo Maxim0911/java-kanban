@@ -1,17 +1,43 @@
 package model;
 
-import model.Status;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Task {
     protected long id;
     protected String name;
     protected String description;
     protected Status taskStatus;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
     public Task(String name, String description, Status taskStatus) {
         this.name = name;
         this.description = description;
         this.taskStatus = taskStatus;
+    }
+
+    public Task(String name, String description, Status taskStatus, Duration duration, LocalDateTime startTime) {
+        this(name, description, taskStatus);
+        this.duration = duration;
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public Duration getDuration() {
+        return duration;
     }
 
     public long getId() {
@@ -79,5 +105,8 @@ public class Task {
     public String getType() {
         return "TASK";
     }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
 }
-//12345

@@ -1,4 +1,4 @@
-package manager;
+package managers;
 
 import model.Epic;
 import model.SubTask;
@@ -19,6 +19,7 @@ public interface TaskManager {
 
     Task deleteTask(long id);
 
+    List<Task> getPrioritizedTasks();
 
     //this methods for epicov
     Epic getEpic(long id);

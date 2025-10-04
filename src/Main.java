@@ -1,7 +1,7 @@
-import manager.Managers;
+import managers.Managers;
 import model.Status;
 import model.Task;
-import manager.TaskManager;
+import managers.TaskManager;
 
 public class Main {
 
