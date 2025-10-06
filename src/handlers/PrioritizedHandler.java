@@ -1,4 +1,4 @@
-package Handlers;
+package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -8,10 +8,10 @@ import model.Task;
 import java.io.IOException;
 import java.util.List;
 
-public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
+public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
     private final TaskManager taskManager;
 
-    public HistoryHandler(TaskManager taskManager) {
+    public PrioritizedHandler(TaskManager taskManager) {
         this.taskManager = taskManager;
     }
 
@@ -23,8 +23,8 @@ public class HistoryHandler extends BaseHttpHandler implements HttpHandler {
         }
 
         try {
-            List<Task> history = taskManager.getHistory();
-            String response = gson.toJson(history);
+            List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+            String response = gson.toJson(prioritizedTasks);
             sendSuccess(exchange, response);
         } catch (Exception e) {
             sendInternalError(exchange);

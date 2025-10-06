@@ -1,6 +1,6 @@
 package manager;
 
-import Handlers.HttpTaskServer;
+import handlers.HttpTaskServer;
 import com.google.gson.Gson;
 import managers.InMemoryTaskManager;
 import managers.TaskManager;

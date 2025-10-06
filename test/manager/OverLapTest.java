@@ -1,6 +1,6 @@
 package manager;
 
-import Handlers.HttpTaskServer;
+import handlers.HttpTaskServer;
 import com.google.gson.Gson;
 import managers.InMemoryTaskManager;
 import managers.TaskManager;
@@ -19,7 +19,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
