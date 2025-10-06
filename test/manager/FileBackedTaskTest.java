@@ -1,7 +1,11 @@
 package manager;
 
 import managers.FileBackedTaskManager;
-import model.*;
+import managers.TaskManager;
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -26,12 +30,8 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     protected FileBackedTaskManager createTaskManager() {
         try {
             testFile = Files.createTempFile(tempDir, "test", ".csv").toFile();
-            return new FileBackedTaskManager(testFile.toPath()) {
-                @Override
-                public SubTask deleteSubTask(long id) {
-                    return null;
-                }
-            };
+            // Используем FileBackedTaskManager напрямую - все методы уже реализованы
+            return new FileBackedTaskManager(testFile);
         } catch (IOException e) {
             throw new RuntimeException("Failed to create test file", e);
         }
@@ -126,5 +126,39 @@ class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
         assertEquals(2, history.size());
         assertEquals(task1.getId(), history.get(0).getId());
         assertEquals(task2.getId(), history.get(1).getId());
+    }
+
+    @Test
+    void testEpicStatusCalculationAfterLoad() {
+        FileBackedTaskManager manager1 = createTaskManager();
+
+        Epic epic = manager1.createEpic(new Epic("Epic", "Desc"));
+        SubTask subTask1 = manager1.createSubtask(new SubTask("Sub1", "Desc1", Status.NEW, epic.getId()));
+        SubTask subTask2 = manager1.createSubtask(new SubTask("Sub2", "Desc2", Status.DONE, epic.getId()));
+
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(testFile);
+
+        Epic loadedEpic = manager2.getEpic(epic.getId());
+        assertEquals(Status.IN_PROGRESS, loadedEpic.getTaskStatus());
+    }
+
+    // Добавляем тест для проверки корректности загрузки подзадач
+    @Test
+    void testSubTaskEpicRelationshipAfterLoad() {
+        FileBackedTaskManager manager1 = createTaskManager();
+
+        Epic epic = manager1.createEpic(new Epic("Epic", "Desc"));
+        SubTask subTask = manager1.createSubtask(new SubTask("Sub", "Desc", Status.NEW, epic.getId()));
+
+        FileBackedTaskManager manager2 = FileBackedTaskManager.loadFromFile(testFile);
+
+        Epic loadedEpic = manager2.getEpic(epic.getId());
+        SubTask loadedSubTask = manager2.getSubTask(subTask.getId());
+
+        assertNotNull(loadedEpic, "Эпик должен быть загружен");
+        assertNotNull(loadedSubTask, "Подзадача должна быть загружена");
+        assertEquals(epic.getId(), loadedSubTask.getEpicId(), "EpicId подзадачи должен совпадать");
+        assertTrue(loadedEpic.getSubtaskIds().contains(loadedSubTask.getId()),
+                "Эпик должен содержать ID подзадачи");
     }
 }

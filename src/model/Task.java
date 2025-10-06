@@ -24,6 +24,13 @@ public class Task {
         this.startTime = startTime;
     }
 
+    public Task() {
+        this.id = 0;
+        this.name = "";
+        this.description = "";
+        this.taskStatus = Status.NEW;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }

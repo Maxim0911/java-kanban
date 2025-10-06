@@ -5,46 +5,38 @@ import model.SubTask;
 import model.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
-    //this all methods for Task
+    // Methods for Task
     Task getTask(long id);
-
+    HashMap<Long, Task> getTasks();
     Task createTask(Task task);
-
     Task updateTask(Task task);
-
-    void deletedAllTask();
-
+    void deleteAllTasks();
+    void deletedAllTask()
     Task deleteTask(long id);
-
     List<Task> getPrioritizedTasks();
 
-    //this methods for epicov
+    // Methods for Epics
     Epic getEpic(long id);
-
+    HashMap<Long, Epic> getEpics();
+    Epic deleteEpic(long id);
     ArrayList<Epic> getAllEpics();
-
     Epic createEpic(Epic epic);
-
-    Epic updateEppic(Epic epic);
-
+    Epic updateEpic(Epic epic);
     void deleteAllEpics();
 
+    // Methods for Subtasks
+    SubTask deleteSubTask(long id);
     SubTask deleteById(long id);
-
     SubTask createSubtask(SubTask subTask);
-
+    HashMap<Long, SubTask> getSubTasks();
     SubTask getSubTask(Long id);
-
-    ArrayList<SubTask> getAllSubTask();
-
+    ArrayList<SubTask> getAllSubTasks();
     SubTask updateSubtask(SubTask subTask);
-
     void deleteAllSubTask();
-
     void updateEpicStatus(long id);
-
     List<Task> getHistory();
 }

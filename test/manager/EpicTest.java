@@ -1,12 +1,12 @@
 package manager;
 
+import managers.InMemoryTaskManager;
 import model.Epic;
 import model.Status;
 import model.SubTask;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import managers.InMemoryTaskManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -18,17 +18,8 @@ class EpicStatusTest {
 
     @BeforeEach
     void setUp() {
-        taskManager = new InMemoryTaskManager() {
-            @Override
-            public SubTask deleteSubTask(long id) {
-                return null;
-            }
-
-            @Override
-            public SubTask updateSubTask(SubTask subTask) {
-                return null;
-            }
-        };
+        // Используем InMemoryTaskManager напрямую - все методы уже реализованы
+        taskManager = new InMemoryTaskManager();
         epic = taskManager.createEpic(new Epic("Test Epic", "Description"));
     }
 
@@ -41,7 +32,9 @@ class EpicStatusTest {
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
 
-        assertEquals(Status.NEW, epic.getTaskStatus());
+        // Получаем обновленный эпик
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.NEW, updatedEpic.getTaskStatus());
     }
 
     @Test
@@ -53,7 +46,9 @@ class EpicStatusTest {
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
 
-        assertEquals(Status.DONE, epic.getTaskStatus());
+        // Получаем обновленный эпик
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.DONE, updatedEpic.getTaskStatus());
     }
 
     @Test
@@ -65,7 +60,9 @@ class EpicStatusTest {
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
 
-        assertEquals(Status.IN_PROGRESS, epic.getTaskStatus());
+        // Получаем обновленный эпик
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.IN_PROGRESS, updatedEpic.getTaskStatus());
     }
 
     @Test
@@ -77,7 +74,9 @@ class EpicStatusTest {
         taskManager.createSubtask(sub1);
         taskManager.createSubtask(sub2);
 
-        assertEquals(Status.IN_PROGRESS, epic.getTaskStatus());
+        // Получаем обновленный эпик
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.IN_PROGRESS, updatedEpic.getTaskStatus());
     }
 
     @Test
@@ -90,17 +89,56 @@ class EpicStatusTest {
         taskManager.createSubtask(sub2);
         taskManager.createSubtask(sub3);
 
-        assertEquals(Status.IN_PROGRESS, epic.getTaskStatus());
+        // Получаем обновленный эпик
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.IN_PROGRESS, updatedEpic.getTaskStatus());
     }
 
     @Test
     void testEpicStatusEmpty() {
         // Эпик без подзадач
-        assertEquals(Status.NEW, epic.getTaskStatus());
+        Epic updatedEpic = taskManager.getEpic(epic.getId());
+        assertEquals(Status.NEW, updatedEpic.getTaskStatus());
     }
 
     private SubTask createSubTask(String name, Status status, long epicId, int hourOffset) {
         return new SubTask(name, "Description", status, epicId,
                 Duration.ofMinutes(30), LocalDateTime.now().plusHours(hourOffset));
+    }
+
+    @Test
+    void testManagerCreateSubTask() {
+        System.out.println("=== TESTING MANAGER CREATE SUBTASK ===");
+
+        // Создаем эпик
+        Epic epic = new Epic("Test Epic", "Description");
+        Epic createdEpic = taskManager.createEpic(epic);
+        System.out.println("Created epic ID: " + createdEpic.getId());
+
+        // Создаем подзадачу
+        SubTask subTask = new SubTask("Test SubTask", "Description", Status.NEW, createdEpic.getId());
+
+        try {
+            System.out.println("Calling manager.createSubtask()...");
+            SubTask result = taskManager.createSubtask(subTask);
+            System.out.println("✓ SUCCESS! Created subtask with ID: " + result.getId());
+            System.out.println("Result epicId: " + result.getEpicId());
+
+            // Проверяем, что эпик знает о подзадаче
+            Epic updatedEpic = taskManager.getEpic(createdEpic.getId());
+            System.out.println("Epic subtask IDs: " + updatedEpic.getSubtaskIds());
+            System.out.println("Epic status: " + updatedEpic.getTaskStatus());
+
+            // Добавляем assertions для проверки
+            assertNotNull(result, "Подзадача должна быть создана");
+            assertEquals(createdEpic.getId(), result.getEpicId(), "EpicId должен совпадать");
+            assertTrue(updatedEpic.getSubtaskIds().contains(result.getId()),
+                    "Эпик должен содержать ID подзадачи");
+
+        } catch (Exception e) {
+            System.out.println("✗ FAILED: " + e.getMessage());
+            e.printStackTrace();
+            fail("Тест не должен выбрасывать исключение: " + e.getMessage());
+        }
     }
 }

@@ -1,11 +1,11 @@
 package manager;
 
+import managers.InMemoryHistoryManager;
 import model.Status;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import managers.InMemoryHistoryManager;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -122,5 +122,46 @@ class InMemoryHistoryManagerTest {
         assertEquals(task1, history.get(0));
         assertEquals(task2, history.get(1));
         assertEquals(task3, history.get(2));
+    }
+
+    // Добавляем тест на ограничение размера истории
+    @Test
+    void testHistorySizeLimit() {
+        // Создаем больше задач, чем максимальный размер истории (10)
+        for (int i = 1; i <= 15; i++) {
+            Task task = new Task("Task" + i, "Desc" + i, Status.NEW);
+            task.setId(i);
+            historyManager.add(task);
+        }
+
+        List<Task> history = historyManager.getHistory();
+        // История не должна превышать максимальный размер (10)
+        assertTrue(history.size() <= 10, "История не должна превышать 10 элементов");
+
+        // Проверяем, что остались последние добавленные задачи
+        assertEquals(6L, history.get(0).getId(), "Первым должен быть 6й элемент");
+        assertEquals(15L, history.get(history.size() - 1).getId(),
+                "Последним должен быть 15й элемент");
+    }
+
+    // Тест на добавление null задачи
+    @Test
+    void testAddNullTask() {
+        historyManager.add(null);
+
+        List<Task> history = historyManager.getHistory();
+        assertTrue(history.isEmpty(), "История должна остаться пустой при добавлении null");
+    }
+
+    // Тест на последовательное добавление одинаковых задач
+    @Test
+    void testConsecutiveDuplicateAdd() {
+        historyManager.add(task1);
+        historyManager.add(task1);
+        historyManager.add(task1);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(1, history.size(), "Должна быть только одна уникальная задача");
+        assertEquals(task1, history.get(0));
     }
 }
