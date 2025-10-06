@@ -1,6 +1,6 @@
 package handlers;
 
-import Adapters.DurationAdapter;
+import adapters.DurationAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
