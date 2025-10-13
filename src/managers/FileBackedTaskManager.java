@@ -4,18 +4,19 @@ import exception.ManagerSaveException;
 import model.Epic;
 import model.SubTask;
 import model.Task;
-import model.TypeTask;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class FileBackedTaskManager extends InMemoryTaskManager {
+public class FileBackedTaskManager extends InMemoryTaskManager {
     protected final Path path;
+    private final File file;
 
-    public FileBackedTaskManager(Path path) {
-        this.path = path;
+    public FileBackedTaskManager(File file) {
+        this.path = file.toPath();
+        this.file = file;
     }
 
     public HistoryManager getHistoryManager() {
@@ -23,15 +24,17 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
-        FileBackedTaskManager fileBackedTasksManager = new FileBackedTaskManager(file.toPath()) {
-            @Override
-            public SubTask deleteSubTask(long id) {
-                return null;
-            }
-        };
+        FileBackedTaskManager manager = new FileBackedTaskManager(file);
+        loadTasksFromFile(manager, file);
+        return manager;
+    }
+
+    private static void loadTasksFromFile(FileBackedTaskManager manager, File file) {
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            bufferedReader.readLine(); // Пропускаем заголовок
-            String line;
+            String line = bufferedReader.readLine();
+            if (line == null || !line.equals(CSVFormatter.getHeader())) {
+                return;
+            }
 
             while ((line = bufferedReader.readLine()) != null) {
                 if (line.isEmpty()) {
@@ -41,27 +44,24 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = CSVFormatter.fromString(line);
                 if (task == null) continue;
 
-                TypeTask type = TypeTask.valueOf(task.getType());
+                if (task.getId() >= manager.generatorId) {
+                    manager.generatorId = task.getId() + 1;
+                }
 
-                switch (type) {
-                    case TASK:
-                        fileBackedTasksManager.getTasks().put(task.getId(), task);
-                        break;
-                    case EPIC:
-                        Epic epic = (Epic) task;
-                        fileBackedTasksManager.getEpics().put(epic.getId(), epic);
-                        break;
-                    case SUBTASK:
-                        SubTask subTask = (SubTask) task;
-                        fileBackedTasksManager.getSubTasks().put(subTask.getId(), subTask);
-                        Epic parentEpic = fileBackedTasksManager.getEpics().get(subTask.getEpicId());
-                        if (parentEpic != null) {
-                            parentEpic.addSubtaskId(subTask.getId());
-                            fileBackedTasksManager.updateEppic(parentEpic);
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Неизвестный тип задачи: " + type);
+                if (task instanceof Epic) {
+                    Epic epic = (Epic) task;
+                    manager.epics.put(epic.getId(), epic);
+                } else if (task instanceof SubTask) {
+                    SubTask subTask = (SubTask) task;
+                    manager.subtasks.put(subTask.getId(), subTask);
+                    Epic parentEpic = manager.epics.get(subTask.getEpicId());
+                    if (parentEpic != null) {
+                        parentEpic.addSubtaskId(subTask.getId());
+                        manager.updateEpicStatus(parentEpic.getId());
+                        manager.calculateEpicTime(parentEpic);
+                    }
+                } else {
+                    manager.tasks.put(task.getId(), task);
                 }
             }
 
@@ -69,9 +69,9 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
             if (historyLine != null && !historyLine.isEmpty()) {
                 List<Long> historyIds = CSVFormatter.historyFromString(historyLine);
                 for (Long id : historyIds) {
-                    Task task = fileBackedTasksManager.getAnyTask(id);
+                    Task task = manager.getAnyTask(id);
                     if (task != null) {
-                        fileBackedTasksManager.historyManager.add(task);
+                        manager.historyManager.add(task);
                     }
                 }
             }
@@ -79,17 +79,15 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении из файла", e);
         }
-
-        return fileBackedTasksManager;
     }
 
     private Task getAnyTask(long id) {
-        if (getTasks().containsKey(id)) {
-            return getTasks().get(id);
-        } else if (getEpics().containsKey(id)) {
-            return getEpics().get(id);
+        if (tasks.containsKey(id)) {
+            return tasks.get(id);
+        } else if (epics.containsKey(id)) {
+            return epics.get(id);
         } else {
-            return getSubTasks().get(id);
+            return subtasks.get(id);
         }
     }
 
@@ -143,22 +141,22 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public Epic updateEppic(Epic epic) {
-        Epic updatedEpic = super.updateEppic(epic);
+    public Epic updateEpic(Epic epic) {
+        Epic updatedEpic = super.updateEpic(epic);
         save();
         return updatedEpic;
     }
 
     @Override
-    public SubTask updateSubTask(SubTask subTask) {
+    public SubTask updateSubtask(SubTask subTask) {
         SubTask updatedSubTask = super.updateSubtask(subTask);
         save();
         return updatedSubTask;
     }
 
     @Override
-    public void deletedAllTask() {
-        super.deletedAllTask();
+    public void deleteAllTasks() {
+        super.deleteAllTasks();
         save();
     }
 
@@ -182,14 +180,21 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public SubTask deleteById(long id) {
-        SubTask subTask = super.deleteById(id);
+    public Epic deleteEpic(long id) {
+        Epic epic = super.deleteEpic(id);
+        save();
+        return epic;
+    }
+
+    @Override
+    public SubTask deleteSubTask(long id) {
+        SubTask subTask = super.deleteSubTask(id);
         save();
         return subTask;
     }
 
     public void save() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path.toFile()))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(CSVFormatter.getHeader());
             writer.newLine();
 
@@ -199,19 +204,18 @@ public abstract class FileBackedTaskManager extends InMemoryTaskManager {
             }
 
             writer.newLine();
-            writer.write(CSVFormatter.historyToString(getHistoryManager()));
+            writer.write(CSVFormatter.historyToString(historyManager));
 
         } catch (IOException ex) {
             throw new ManagerSaveException("Ошибка при записи файла", ex);
         }
     }
 
-    private List<Task> getAllTasks() {
+    public List<Task> getAllTasks() {
         List<Task> allTasks = new ArrayList<>();
-        allTasks.addAll(getTasks().values());
-        allTasks.addAll(getEpics().values());
-        allTasks.addAll(getSubTasks().values());
+        allTasks.addAll(tasks.values());
+        allTasks.addAll(epics.values());
+        allTasks.addAll(subtasks.values());
         return allTasks;
     }
 }
-

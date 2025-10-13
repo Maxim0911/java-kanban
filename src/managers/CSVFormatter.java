@@ -1,6 +1,10 @@
 package managers;
 
-import model.*;
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,14 +49,20 @@ public class CSVFormatter {
             long id = Long.parseLong(fields[0]);
             String type = fields[1];
             String name = unescapeSpecialCharacters(fields[2]);
-            Status status = Status.valueOf(fields[3]);
+            Status status;
+            try {
+                status = Status.valueOf(fields[3]);
+            } catch (IllegalArgumentException e) {
+                status = Status.NEW;
+            }
+
             String description = unescapeSpecialCharacters(fields[4]);
             String epicIdStr = fields[5];
             String durationStr = fields[6];
             String startTimeStr = fields[7];
 
             Duration duration = null;
-            if (!durationStr.isEmpty()) {
+            if (!durationStr.isEmpty() && !durationStr.equals("null")) {
                 try {
                     duration = Duration.ofMinutes(Long.parseLong(durationStr));
                 } catch (NumberFormatException e) {
@@ -61,7 +71,7 @@ public class CSVFormatter {
             }
 
             LocalDateTime startTime = null;
-            if (!startTimeStr.isEmpty()) {
+            if (!startTimeStr.isEmpty() && !startTimeStr.equals("null")) {
                 try {
                     startTime = LocalDateTime.parse(startTimeStr, DATE_TIME_FORMATTER);
                 } catch (Exception e) {
@@ -73,31 +83,34 @@ public class CSVFormatter {
                 case "TASK":
                     Task task = new Task(name, description, status);
                     task.setId(id);
-                    task.setDuration(duration);
-                    task.setStartTime(startTime);
+                    if (duration != null) task.setDuration(duration);
+                    if (startTime != null) task.setStartTime(startTime);
                     return task;
 
                 case "EPIC":
                     Epic epic = new Epic(name, description);
                     epic.setId(id);
                     epic.setTaskStatus(status);
-                    epic.setDuration(duration);
-                    epic.setStartTime(startTime);
+                    if (duration != null) epic.setDuration(duration);
+                    if (startTime != null) epic.setStartTime(startTime);
                     return epic;
 
                 case "SUBTASK":
-                    long epicId = epicIdStr.isEmpty() ? -1 : Long.parseLong(epicIdStr);
+                    long epicId = epicIdStr.isEmpty() || epicIdStr.equals("null") ?
+                            -1 : Long.parseLong(epicIdStr.trim());
                     SubTask subTask = new SubTask(name, description, status, epicId);
                     subTask.setId(id);
-                    subTask.setDuration(duration);
-                    subTask.setStartTime(startTime);
+                    if (duration != null) subTask.setDuration(duration);
+                    if (startTime != null) subTask.setStartTime(startTime);
                     return subTask;
 
                 default:
                     return null;
             }
+
         } catch (Exception e) {
             System.err.println("Ошибка при парсинге задачи: " + e.getMessage());
+            System.err.println("Строка: " + value);
             return null;
         }
     }
@@ -125,17 +138,17 @@ public class CSVFormatter {
         return historyIds;
     }
 
-    private static String escapeSpecialCharacters(String data) {
+    static String escapeSpecialCharacters(String data) {
         if (data == null) return "";
         return data.replace(",", "\\,")
                 .replace("\n", "\\n")
                 .replace("\r", "\\r");
     }
 
-    private static String unescapeSpecialCharacters(String data) {
+    static String unescapeSpecialCharacters(String data) {
         if (data == null) return "";
         return data.replace("\\,", ",")
-                .replace("\\\"", "\"")
-                .replace("\\n", "\n");
+                .replace("\\n", "\n")
+                .replace("\\r", "\r");
     }
 }

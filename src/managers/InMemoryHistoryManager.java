@@ -9,19 +9,15 @@ public class InMemoryHistoryManager implements HistoryManager {
     private final int maxHistorySize = 10;
     private final List<Task> historyList = new ArrayList<>();
 
-
-    //перенести сюда список историй из таск менеджер
-
-
     @Override
-    public List<Task> getHistory() {     //получить список историй
+    public List<Task> getHistory() {
         return new ArrayList<>(historyList);
     }
 
     @Override
     public void add(Task task) {
         if (task == null) {
-            return;   //добавить таск в список историй
+            return;
         }
         historyList.removeIf(existingTask -> existingTask.getId() == task.getId());
 
@@ -34,7 +30,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(long id) {
-        // Удаляем задачу по ID
         historyList.removeIf(task -> task.getId() == id);
     }
 }

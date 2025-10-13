@@ -1,7 +1,10 @@
 package manager;
 
 import managers.TaskManager;
-import model.*;
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +83,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Epic updated = new Epic("Updated Epic", "Updated Description");
         updated.setId(created.getId());
 
-        taskManager.updateEppic(updated);
+        taskManager.updateEpic(updated); // Исправлено: updateEppic -> updateEpic
         Epic retrieved = taskManager.getEpic(created.getId());
         assertEquals("Updated Epic", retrieved.getName());
     }
@@ -93,6 +96,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         SubTask created = taskManager.createSubtask(subTask1);
         assertNotNull(created.getId());
         assertEquals(epicCreated.getId(), created.getEpicId());
+
+        // Дополнительная проверка: эпик должен знать о подзадаче
+        Epic updatedEpic = taskManager.getEpic(epicCreated.getId());
+        assertTrue(updatedEpic.getSubtaskIds().contains(created.getId()));
     }
 
     @Test
@@ -124,7 +131,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         subTask1.setEpicId(epicCreated.getId());
         taskManager.createSubtask(subTask1);
 
-        List<SubTask> subTasks = taskManager.getAllSubTask();
+        List<SubTask> subTasks = taskManager.getAllSubTasks(); // Исправлено: getAllSubTask -> getAllSubTasks
         assertEquals(1, subTasks.size());
     }
 
@@ -163,7 +170,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         taskManager.deleteAllSubTask();
 
-        List<SubTask> subTasks = taskManager.getAllSubTask();
+        List<SubTask> subTasks = taskManager.getAllSubTasks(); // Исправлено: getAllSubTask -> getAllSubTasks
         assertTrue(subTasks.isEmpty());
     }
 
@@ -186,4 +193,3 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(taskIndex < subTaskIndex);
     }
 }
-//nt
